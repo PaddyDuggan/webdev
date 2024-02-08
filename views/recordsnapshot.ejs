@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Record Emotions</title>
+ 
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Bootstrap Datepicker CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+
+  <!-- Bootstrap Timepicker CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/css/bootstrap-timepicker.min.css">
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Bootstrap Datepicker JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
+  <!-- Bootstrap Timepicker JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/js/bootstrap-timepicker.min.js"></script>
+
+  <link href="mystyles.css" rel="stylesheet"> 
+
+  </head>
+  <body class="mt-5">
+    <nav class="navbar navbar-expand-lg bg-primary fixed-top" data-bs-theme="dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#"><img src="/imgs/moodlog-high-resolution-logo-transparent (2).png" alt="Logo" width="150" height="40" class="d-inline-block align-text-center"></a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/home">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/record">Record</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/history">History</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/yourtrends">Your Trends</a>
+            </li>
+            </ul>
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="btn btn-danger" href="/logout" role="button">Log Out</a>
+              </li>
+            </ul>
+
+      </div>
+    </nav>
+
+    <h1 class="text-center m-2 pt-5">Record your emotions below</h1>
+    <div class="text-center shadow-sm p-2">
+      <p>
+        Please be as honest as possible
+      </p>
+    </div>
+
+    <div class="text-danger text-center">
+      <p class="bg-white d-inline-block p-2 rounded-pill">
+        Remember: 0 = Lowest, 100 = highest
+      </p>
+    </div>
+
+      <style>
+        .slider {
+         
+          width: 100%;
+          height: 15px;
+          border-radius: 5px;
+          background: #d3d3d3;
+          outline: none;
+          opacity: 0.7;
+          -webkit-transition: .2s;
+          transition: opacity .2s;
+        }
+    
+        .slider::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 25px;
+          height: 25px;
+          border-radius: 50%;
+          background: #04AA6D;
+          cursor: pointer;
+        }
+    
+        .slider::-moz-range-thumb {
+          width: 25px;
+          height: 25px;
+          border-radius: 50%;
+          background: #04AA6D;
+          cursor: pointer;
+        }
+      </style>
+    </head>
+    
+    <body class="bg-light">
+      <div class="container-lg my-2 text-center">
+        <form action="/record" id="recordform" method="post">
+        <div class="row justify-content-center">
+         
+        </div>
+        <div class="row justify-content-center">
+          <div class="col-md-6">
+            <div class="row mb-3">
+              <div class="col">
+                <label class="form-label" for="enjoymentSlider">Enjoyment</label>
+                <input type="range" class="form-range slider" id="enjoymentSlider" name="myenjoyment" oninput="updateSliderValue('enjoymentValue', this.value)">
+                <p id="enjoymentValue">50</p>
+              </div>
+              <div class="col">
+                <label class="form-label" for="sadnessSlider">Sadness</label>
+                <input type="range" class="form-range slider" id="sadnessSlider" name="mysadness" oninput="updateSliderValue('sadnessValue', this.value)">
+                <p id="sadnessValue">50</p>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col">
+                <label class="form-label" for="angerSlider">Anger</label>
+                <input type="range" class="form-range slider" id="angerSlider" name="myanger" oninput="updateSliderValue('angerValue', this.value)">
+                <p id="angerValue">50</p>
+              </div>
+              <div class="col">
+                <label class="form-label" for="contemptSlider">Contempt</label>
+                <input type="range" class="form-range slider" id="contemptSlider" name="mycontempt" oninput="updateSliderValue('contemptValue', this.value)">
+                <p id="contemptValue">50</p>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col">
+                <label class="form-label" for="disgustSlider">Disgust</label>
+                <input type="range" class="form-range slider" id="disgustSlider" name="mydisgust" oninput="updateSliderValue('disgustValue', this.value)">
+                <p id="disgustValue">50</p>
+              </div>
+              <div class="col">
+                <label class="form-label" for="fearSlider">Fear</label>
+                <input type="range" class="form-range slider" id="fearSlider" name="myfear" oninput="updateSliderValue('fearValue', this.value)">
+                <p id="fearValue">50</p>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col">
+                <label class="form-label" for="surpriseSlider">Surprise</label>
+                <input type="range" class="form-range slider" id="surpriseSlider" name="mysurprise" oninput="updateSliderValue('surpriseValue', this.value)">
+                <p id="surpriseValue">50</p>
+              </div>
+            </div>
+
+            <div class="form-group col-mb-3">
+              <label for="inputTrigger">Emotional Trigger</label>
+              <select id="inputTrigger" class="form-control my-2 text-center" name="mytrigger">
+                <option selected>None</option>
+                <option>Social Interaction</option>
+                <option>Physical Activity</option>
+                <option>Family</option>
+                <option>Friends</option>
+                <option>Work</option>
+                <option>Health</option>
+                <option>Education</option>
+                <option>Sleep</option>
+                <option>Weather</option>
+                <option>Social Media</option>
+              </select>
+            </div>
+
+            <div class="row mb-3 my-5">
+              <div class="col">
+                <label for="datepicker">Date:</label>
+                <input type="text" id="datepicker" class="form-control text-center" name="mydate" readonly>
+ 
+              </div>
+              <div class="col">
+                <label for="timepicker">Time:</label>
+                <input type="text" id="timepicker" class="form-control text-center" name="mytime" readonly>
+
+              </div>
+            </div>
+            
+            
+      
+
+            <div class="field">
+              <div class="control">
+                  <input class="btn btn-success my-2" type="submit" value="Submit">
+                  <input class="btn btn-danger my-2 px-3" type="reset" value="Reset" onclick="resetForm()">
+              </div>
+          </div>
+           
+          
+
+          </div>
+        </div>
+      </form>
+      </div>
+
+      <script>
+        // Function to reset the form
+        function resetForm() {
+          // Reset the sliders
+          resetSlider('enjoymentSlider', 'enjoymentValue', 50);
+          resetSlider('sadnessSlider', 'sadnessValue', 50);
+          resetSlider('angerSlider', 'angerValue', 50);
+          resetSlider('contemptSlider', 'contemptValue', 50);
+          resetSlider('disgustSlider', 'disgustValue', 50);
+          resetSlider('fearSlider', 'fearValue', 50);
+          resetSlider('surpriseSlider', 'surpriseValue', 50);
+
+          // Reset the emotional trigger dropdown to default
+          document.getElementById('inputTrigger').value = 'None'; 
+      
+          event.preventDefault();
+        
+        }
+      
+        // Function to reset a slider
+        function resetSlider(sliderId, displayId, defaultValue) {
+          document.getElementById(sliderId).value = defaultValue;
+          document.getElementById(displayId).innerHTML = defaultValue;
+        }
+        </script>
+        <script>
+      
+      // Function to set the current date and time
+    function setCurrentDateTime() {
+      const currentDate = new Date();
+      
+      // Format the date
+      const formattedDate = currentDate.toISOString().split('T')[0];
+
+      // Format the time
+      const currentHours = currentDate.getHours().toString().padStart(2, '0');
+      const currentMinutes = currentDate.getMinutes().toString().padStart(2, '0');
+      const formattedTime = `${currentHours}:${currentMinutes}`;
+
+      // Set the value of the input fields
+      document.getElementById('datepicker').value = formattedDate;
+      document.getElementById('timepicker').value = formattedTime;
+    }
+
+    // Call the function to set current date and time when the page loads
+    setCurrentDateTime();
+
+
+// Attach a submit event listener to the form
+document.getElementById('recordform').addEventListener('submit', function() {
+  // Set the values of hidden input fields before form submission
+  document.getElementById('mydate').value = document.getElementById('datepicker').value;
+  document.getElementById('mytime').value = document.getElementById('timepicker').value;
+});
+
+
+      </script>
+    
+      <!-- Bootstrap JS -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      function updateSliderValue(elementId, value) {
+        document.getElementById(elementId).innerHTML = value;
+      }
+    </script>
+
+
+
+  </body>
+</html>

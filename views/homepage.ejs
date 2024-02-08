@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <link href="mystyles.css" rel="stylesheet" />
+    <title>Home Page</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+  <body>
+
+    <nav class="navbar navbar-expand-lg bg-primary fixed-top" data-bs-theme="dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#"><img src="/imgs/moodlog-high-resolution-logo-transparent (2).png" alt="Logo" width="150" height="40" class="d-inline-block align-text-center"></a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/home">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/record">Record</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/history">History</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/yourtrends">Your Trends</a>
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <% if(user.isloggedin) { %>
+                <a class="btn btn-danger" href="/logout" role="button">Log Out</a>
+              <% } else { %>
+                <a class="btn btn-success" href="/login" role="button">Login/Register</a>
+              <% } %>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Content Section -->
+    <div class="container mt-5 pb-3">
+      <% if(user.isloggedin) { %>
+      <h1 class="display-4 text-center pt-5 pb-2">
+        Hey <%= user.firstname %>, how are you today?
+      </h1>
+      <% } else { %>
+      <h1 class="display-4 text-center pt-5 pb-2">Welcome to MoodLog</h1>
+      <% } %>
+    </div>
+
+    <div class="container-flex text-center bg-white text-black p-2">
+      <p class="lead">
+        Are you looking to gain deeper insights into your emotional well-being?
+        MoodLog is here to help.
+      </p>
+      <p class="lead">
+        Whether you're navigating life's ups and downs or simply want to
+        understand yourself better, our platform offers a comprehensive solution
+        for tracking and analyzing your emotions.
+      </p>
+    </div>
+
+    <div class="container-flex">
+      <div class="row justify-content-center mt-3 p-3">
+        <div class="col text-center">
+          <div class="display-6 text-center">
+            <p>Why MoodLog?</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mx-2">
+        <div class="col">
+          <p class="text-center bg-white text-black">Gain Self-Awareness</p>
+          <img
+            src="/imgs/selfawareness.jpg"
+            alt="selfawareness"
+            width="200"
+            height="100"
+            class="my-0 mx-auto d-block"
+          />
+          <p class="p-2 text-center">
+            By recording your emotions daily, you'll develop a clearer
+            understanding of how you feel and what influences your mood.
+          </p>
+        </div>
+
+        <div class="col">
+          <p class="text-center bg-white text-black">Identify Patterns</p>
+          <img
+            src="/imgs/identifypatterns.png"
+            alt="identifypatterns"
+            width="100"
+            height="100"
+            class="my-0 mx-auto d-block"
+          />
+          <p class="p-1 text-center">
+            Our intuitive interface allows you to track seven key emotions and
+            their contextual triggers. Spot trends over time to recognize
+            patterns in your emotional responses.
+          </p>
+        </div>
+
+        <div class="col">
+          <p class="text-center bg-white text-black">Improve Mental Health</p>
+          <img
+            src="/imgs/mentalhealth.jpg"
+            alt="mentalhealth"
+            width="200"
+            height="100"
+            class="my-0 mx-auto d-block"
+          />
+          <p class="p-1 text-center">
+            Tracking your emotions can be a powerful tool for managing stress,
+            anxiety, and depression. MoodLog provides valuable insights to
+            support your mental well-being.
+          </p>
+        </div>
+
+        <div class="col">
+          <p class="text-center bg-white text-black">Personalized Insights</p>
+          <img
+            src="/imgs/insights.png"
+            alt="insights"
+            width="100"
+            height="100"
+            class="my-0 mx-auto d-block"
+          />
+          <p class="p-1 text-center">
+            Create an account to unlock personalized insights based on your
+            emotion and trigger data. Our algorithms analyze your entries to
+            provide tailored recommendations for managing your emotional
+            well-being.
+          </p>
+        </div>
+
+        <div class="col">
+          <p class="text-center bg-white text-black">Enhance Relationships</p>
+          <img
+            src="/imgs/relationships.png"
+            alt="relationships"
+            width="200"
+            height="100"
+            class="my-0 mx-auto d-block"
+          />
+          <p class="p-1 text-center">
+            Better understand your emotional reactions in various contexts,
+            leading to improved communication and healthier relationships with
+            others.
+          </p>
+        </div>
+
+        <div class="col">
+          <p class="text-center bg-white text-black">Historical Data</p>
+          <img
+            src="/imgs/history.png"
+            alt="history"
+            width="100"
+            height="100"
+            class="my-0 mx-auto d-block"
+          />
+          <p class="p-1 text-center">
+            Easily access your emotion history and contextual triggers to
+            reflect on your journey and track progress over time.
+          </p>
+        </div>
+
+        <div class="col">
+          <p class="text-center bg-white text-black">Visualize Trends</p>
+          <img
+            src="/imgs/charts.png"
+            alt="charts"
+            width="200"
+            height="100"
+            class="my-0 mx-auto d-block"
+          />
+          <p class="p-1 text-center">
+            Visualize your emotional patterns and contextual influences with
+            intuitive charts and graphs. Understand how different factors impact
+            your mood and behavior.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

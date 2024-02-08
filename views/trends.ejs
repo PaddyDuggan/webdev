@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trends</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="/mystyles.css" rel="stylesheet"> 
+   
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-primary fixed-top" data-bs-theme="dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#"><img src="/imgs/moodlog-high-resolution-logo-transparent (2).png" alt="Logo" width="150" height="40" class="d-inline-block align-text-center"></a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/home">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/record">Record</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/history">History</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/yourtrends">Your Trends</a>
+            </li>
+            </ul>
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="btn btn-danger" href="/logout" role="button">Log Out</a>
+              </li>
+            </ul>
+
+      </div>
+    </nav>
+
+    <!-- Content Section -->
+
+    <div>
+        <h1 class="text-center shadow-sm mt-5 p-5">Your Trends</h1>
+      </div>
+
+      <% if(result.length == 0) { %>
+        <div class="container my-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6 text-center">
+                    <h4 class="text-danger">Nothing to show yet</h4>
+                    <a href="/record" class="btn btn-success btn-lg my-5">Create New Entry</a>
+                </div>
+            </div>
+        </div>
+    <% } else { %>
+        <div class="container my-3 bg-white">
+            <!-- Container with 2 rows and 2 columns -->
+            <div class="row">
+                <div class="col-md-6">
+                    <canvas id="chart1"></canvas>
+                </div>
+                <div class="col-md-6">
+                    <canvas id="chart2"></canvas>
+                </div>
+            </div>
+        </div>
+    <% } %>
+    
+
+  
+  
+  <!-- Bootstrap JS and Popper.js -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Creating the bar chart -->
+  <script>
+    function generateBarChart(canvasId, inputArray) {
+      // Extract emotions from the first entry to get the list of emotions
+      const emotions = Object.keys(inputArray[0]).filter(emotion => !['emotion_id', 'user_id', 'triggers', 'date', 'time'].includes(emotion));
+  
+      // Calculate the average for each emotion
+      const averages = {};
+  
+      // Iterate through each emotion entry
+      inputArray.forEach(emotionEntry => {
+        emotions.forEach(emotion => {
+          // Initialize the average object property if it doesn't exist
+          if (!averages[emotion]) {
+            averages[emotion] = { sum: 0, count: 0 };
+          }
+  
+          // Add the emotion value to the sum
+          averages[emotion].sum += emotionEntry[emotion];
+          averages[emotion].count++;
+        });
+      });
+  
+      // Calculate the final average for each emotion
+      for (const emotion in averages) {
+        averages[emotion] = averages[emotion].sum / averages[emotion].count;
+      }
+  
+      // Use predefined colors for each bar
+      const predefinedColors = [
+        'rgba(0, 255, 0, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(255, 99, 132, 0.2)',
+        'rgba(255, 159, 64, 0.2)',
+        'rgba(153, 102, 255, 0.2)',
+        'rgba(75, 192, 192, 0.2)',
+        'rgba(255, 206, 86, 0.2)', 
+      ];
+  
+      // Chart configuration
+      const ctx = document.getElementById(canvasId).getContext('2d');
+      const myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: emotions,
+          datasets: [{
+            label: 'Average Emotion Scores',
+            data: emotions.map(emotion => averages[emotion]),
+            backgroundColor: predefinedColors,
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1,
+          }],
+        },
+        options: {
+          scales: {
+            y: {
+                beginAtZero: false, // Set to false to start the y-axis from 1
+                suggestedMin: 1,    // Set the minimum value to 1
+                suggestedMax: 100,  // Set the maximum value to 100
+            },
+          },
+        },
+      });
+    }
+
+   
+    // Insert our array
+    const inputArray = <%- JSON.stringify(result) %>; // Pass the array from the server to the client
+    
+    // Call the function for each chart
+    generateBarChart("chart1", inputArray);
+
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Get the current date
+        var currentDate = new Date();
+
+        // Generate date labels for the last 4 weeks
+        var dateLabels = [];
+        for (var i = 3; i >= 0; i--) {
+            var date = new Date(currentDate);
+            date.setDate(currentDate.getDate() - (7 * i));
+            dateLabels.push(date.toISOString().slice(0, 10));
+        }
+
+        result.forEach((row) => {
+        var dataValues = [row.enjoyment];
+        });
+        console.log(dataValues);
+
+        // Create the line chart
+        var ctx = document.getElementById('chart2').getContext('2d');
+        var myLineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: dateLabels,
+                datasets: [{
+                    label: 'Enjoyment',
+                    data: dataValues,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+
+  
+  </body>
+</html>

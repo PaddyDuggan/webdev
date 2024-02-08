@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotional Snapshot History</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <link href="mystyles.css" rel="stylesheet"> 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg bg-primary fixed-top" data-bs-theme="dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"><img src="/imgs/moodlog-high-resolution-logo-transparent (2).png" alt="Logo" width="150" height="40" class="d-inline-block align-text-center"></a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/home">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/record">Record</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/history">History</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/yourtrends">Your Trends</a>
+          </li>
+          </ul>
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="btn btn-danger" href="/logout" role="button">Log Out</a>
+            </li>
+          </ul>
+
+    </div>
+  </nav>
+
+  <div>
+    <h1 class="text-center shadow-sm mt-5 p-5">Emotional Snapshot History</h1>
+  </div>
+
+  <div class="container my-5">
+    <section>
+        <% if(result.length == 0) { %>
+            <div class="text-center">
+                <h4 class="text-danger">Nothing to show yet</h4>
+                <a href="/record" class="btn btn-success btn-lg my-3">Create New Entry</a>
+            </div>
+        <% } else {%>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover text-center">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Enjoyment</th>
+                            <th>Sadness</th>
+                            <th>Anger</th>
+                            <th>Contempt</th>
+                            <th>Disgust</th>
+                            <th>Fear</th>
+                            <th>Surprise</th>
+                            <th>Trigger</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% result.forEach((row) => { %>
+                            <tr>
+                              <td><%= row.date.toLocaleDateString('en-GB') %></td>
+                                <td><%= row.time.substring(0,5) %></td>
+                                <td class="<%= row.enjoyment < 33 ? 'table-danger' : (row.enjoyment >= 33 && row.enjoyment <= 66) ? 'table-warning' : 'table-success' %> text-center">
+                                    <%= row.enjoyment %>
+                                </td>
+                                <td class="<%= row.sadness < 33 ? 'table-success' : (row.sadness >= 33 && row.sadness <= 66) ? 'table-warning' : 'table-danger' %> text-center">
+                                    <%= row.sadness %>
+                                </td>
+                                <td class="<%= row.anger < 33 ? 'table-success' : (row.anger >= 33 && row.anger <= 66) ? 'table-warning' : 'table-danger' %> text-center">
+                                    <%= row.anger %>
+                                </td>
+                                <td class="<%= row.contempt < 33 ? 'table-success' : (row.contempt >= 33 && row.contempt <= 66) ? 'table-warning' : 'table-danger' %> text-center">
+                                    <%= row.contempt %>
+                                </td>
+                                <td class="<%= row.disgust < 33 ? 'table-success' : (row.disgust >= 33 && row.disgust <= 66) ? 'table-warning' : 'table-danger' %> text-center">
+                                    <%= row.disgust %>
+                                </td>
+                                <td class="<%= row.fear < 33 ? 'table-success' : (row.fear >= 33 && row.fear <= 66) ? 'table-warning' : 'table-danger' %> text-center">
+                                    <%= row.fear %>
+                                </td>
+                                <td class="<%= row.surprise < 33 ? 'table-success' : (row.surprise >= 33 && row.surprise <= 66) ? 'table-warning' : 'table-danger' %> text-center">
+                                    <%= row.surprise %>
+                                </td>
+                                <td><%= row.triggers %></td>
+                                <td>
+                                    <a class="btn btn-primary" href="/viewsnapshot/<%= row.emotion_id %>">View/Edit</a>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody> 
+                </table>
+            </div>
+        <% } %>
+    </section>
+</div>
+
+
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+  crossorigin="anonymous"
+></script>
+</body>
+</html>
+
