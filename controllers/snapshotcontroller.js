@@ -1,32 +1,24 @@
-const conn = require("./../util/dbconn");
-const snapshotController = require('../controllers/snapshotcontroller');
+const conn = require("./../util/dbconn"); // Import database connection module
+const snapshotController = require("../controllers/snapshotcontroller"); // Import snapshot controller module
+const axios = require("axios"); // Import axios for making HTTP requests
 
-
+// Render record snapshot page
 exports.getRecordSnapshot = (req, res) => {
-
-  var userInfo = {};
-  const { isloggedin, userid, firstname } = req.session;
+  var userInfo = {}; // Initialize user info object
+  const { isloggedin, userid, firstname } = req.session; // Extract session data
   console.log(`User data from session: ${isloggedin}, ${userid}, ${firstname}`);
 
-  userInfo = { loggedin: isloggedin, userid: userid, firstname: firstname };
+  userInfo = { loggedin: isloggedin, userid: userid, firstname: firstname }; // Assign session data to user info object
 
-  if(isloggedin==true) {
-    res.render("recordsnapshot");
-  } else {
-    res.redirect("/login");
-   }
-
+  res.render("recordsnapshot");
 };
 
+// Process submission of record snapshot form
 exports.postRecordSnapshot = (req, res) => {
-  const data = req.body;
-  console.log(data);
-
-  var userInfo = {};
   const { isloggedin, userid, firstname } = req.session;
   console.log(`User data from session: ${isloggedin}, ${userid}, ${firstname}`);
 
-  userInfo = { loggedin: isloggedin, userid: userid, firstname: firstname };
+  var userInfo = { loggedin: isloggedin, userid: userid, firstname: firstname };
 
   const {
     myenjoyment,
@@ -39,7 +31,7 @@ exports.postRecordSnapshot = (req, res) => {
     mytrigger,
     mydate,
     mytime,
-  } = req.body;
+  } = req.body; // Extract form data
   const vals = [
     userInfo.userid, //user id from session
     myenjoyment,
@@ -52,170 +44,301 @@ exports.postRecordSnapshot = (req, res) => {
     mytrigger,
     mydate,
     mytime,
-  ];
+  ]; // Construct values array
 
-  const insertSQL =
-    "INSERT INTO emotions (user_id, enjoyment, sadness, anger, contempt, disgust, fear, surprise, triggers, date, time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  const endpoint = `http://localhost:3002/record`; // Define API endpoint
 
-  conn.query(insertSQL, vals, (err, rows) => {
-    if (err) {
-      throw err;
-    } else {
-      res.redirect("/history");
-    }
-  });
+  // Send POST request to API endpoint
+  axios
+    .post(endpoint, vals, {
+      validateStatus: (status) => {
+        return status < 500;
+      },
+    })
+    .then((response) => {
+      const status = response.status; // Extract response status
+
+      if (status === 200) {
+        res.redirect("/history"); // Redirect to history page if successful
+      } else {
+        console.log(response.status);
+        console.log(response.data);
+        res.redirect("/history"); // Redirect to history page if unsuccessful
+      }
+    })
+    .catch((error) => {
+      console.log(`Error making API request ${error}`); // Log error if request fails
+    });
 };
 
+// Render snapshot history page
 exports.getSnapshotHistory = (req, res) => {
-  
   var userInfo = {};
   const { isloggedin, userid, firstname } = req.session;
   console.log(`User data from session: ${isloggedin}, ${userid}, ${firstname}`);
 
   userInfo = { loggedin: isloggedin, userid: userid, firstname: firstname };
-  
- if(isloggedin==true) {
 
-  const selectSQL =
-    `SELECT * FROM emotions WHERE user_id = ${userInfo.userid} ORDER BY date DESC, time DESC`;
+  const endpoint = `http://localhost:3002/history`;
 
-  conn.query(selectSQL, (err, rows) => {
-    if (err) {
-      throw err;
-    } else {
-      console.log(rows);
+  // Send GET request to API endpoint
+  axios
+    .get(endpoint, { params: { userid } })
+    .then((response) => {
+      const rows = response.data.result;
+      //console.log(rows);
 
-      res.render("snapshothistory", { result: rows });
-    }
-  });
+      // Convert date strings to Date objects
+      rows.forEach((row) => {
+        row.date = new Date(row.date);
+      });
 
- } else {
-  res.redirect("/login");
- }
- 
-  
+      res.render("snapshothistory", { result: rows }); // Render snapshot history page with data
+    })
+    .catch((error) => {
+      console.log(`Error making API request ${error}`);
+    });
 };
 
+// Render view snapshot page
+// Defined variables before rendering page due to complex algorithm used to create progress bars (sourced from Chat GPT)
 exports.getViewSnapshot = (req, res) => {
-  const { id } = req.params; //const id = req.params.id
-  console.log(id);
-  console.log(req.params);
-  const selectSQL = `SELECT * FROM emotions WHERE emotion_id = ${id}`;
-
-  conn.query(selectSQL, (err, rows) => {
-    if (err) {
-      throw err;
-    } else {
-      console.log(rows);
-      const snapshotData = rows[0];
-
-      res.render("viewsnapshot", {
-        emotionid: id,
-        myenjoyment: snapshotData.enjoyment,
-        mysadness: snapshotData.sadness,
-        myanger: snapshotData.anger,
-        mycontempt: snapshotData.contempt,
-        mydisgust: snapshotData.disgust,
-        myfear: snapshotData.fear,
-        mysurprise: snapshotData.surprise,
-        mytrigger: snapshotData.triggers,
-        mydate: snapshotData.date.toDateString(),
-        mytime: snapshotData.time,
-      });
-    }
-  });
-};
-
-exports.getEditSnapshot = (req, res) => {
-  const { id } = req.params; //const id = req.params.id
-  console.log(id);
-  console.log(req.params);
-  const selectSQL = `SELECT * FROM emotions WHERE emotion_id = ${id}`;
-
-  conn.query(selectSQL, (err, rows) => {
-    if (err) {
-      throw err;
-    } else {
-      console.log(rows);
-      const snapshotData = rows[0];
-
-      res.render("editsnapshot", {
-        emotionid: id,
-        myenjoyment: snapshotData.enjoyment,
-        mysadness: snapshotData.sadness,
-        myanger: snapshotData.anger,
-        mycontempt: snapshotData.contempt,
-        mydisgust: snapshotData.disgust,
-        myfear: snapshotData.fear,
-        mysurprise: snapshotData.surprise,
-        mytrigger: snapshotData.triggers,
-        mydate: snapshotData.date.toDateString(),
-        mytime: snapshotData.time,
-      });
-    }
-  });
-};
-
-exports.postUpdateSnapshot = (req, res) => {
-  console.log(req.params);
-  console.log(req.body);
-
   const { id } = req.params;
-  const { mytrigger } = req.body;
-  vals = [mytrigger];
 
-  const updateSQL = `UPDATE emotions SET triggers = ? WHERE emotion_id = ${id}`;
+  const endpoint = `http://localhost:3002/viewsnapshot/${id}`;
 
-  conn.query(updateSQL, vals, (err, rows) => {
-    if (err) {
-      throw err;
-    } else {
-      res.redirect("/history");
-    }
-  });
+  // Send GET request to API endpoint
+  axios
+    .get(endpoint, {
+      validateStatus: (status) => {
+        return status < 500;
+      },
+    })
+    .then((response) => {
+      const status = response.status;
+
+      if (status === 200) {
+        const rows = response.data.result;
+
+        const snapshotData = rows[0];
+
+        // Convert date strings to Date objects
+        rows.forEach((row) => {
+          row.date = new Date(row.date);
+        });
+
+        res.render("viewsnapshot", {
+          emotionid: id,
+          myenjoyment: snapshotData.enjoyment,
+          mysadness: snapshotData.sadness,
+          myanger: snapshotData.anger,
+          mycontempt: snapshotData.contempt,
+          mydisgust: snapshotData.disgust,
+          myfear: snapshotData.fear,
+          mysurprise: snapshotData.surprise,
+          mytrigger: snapshotData.triggers,
+          mydate: snapshotData.date.toDateString(),
+          mytime: snapshotData.time,
+        });
+      } else {
+        console.log(response.status);
+        console.log(response.data);
+        res.redirect("/history");
+      }
+    })
+    .catch((error) => {
+      console.log(`Error making API request ${error}`);
+    });
 };
 
+// Render edit snapshot page
+exports.getEditSnapshot = (req, res) => {
+  const { id } = req.params; // Extract snapshot ID from request parameters
+
+  const endpoint = `http://localhost:3002/viewsnapshot/${id}`;
+
+  // Send GET request to API endpoint
+  axios
+    .get(endpoint, {
+      validateStatus: (status) => {
+        return status < 500;
+      },
+    })
+    .then((response) => {
+      const status = response.status;
+
+      if (status === 200) {
+        const rows = response.data.result;
+
+        const snapshotData = rows[0];
+
+        // Convert date strings to Date objects
+        rows.forEach((row) => {
+          row.date = new Date(row.date);
+        });
+
+        res.render("editsnapshot", {
+          emotionid: id,
+          myenjoyment: snapshotData.enjoyment,
+          mysadness: snapshotData.sadness,
+          myanger: snapshotData.anger,
+          mycontempt: snapshotData.contempt,
+          mydisgust: snapshotData.disgust,
+          myfear: snapshotData.fear,
+          mysurprise: snapshotData.surprise,
+          mytrigger: snapshotData.triggers,
+          mydate: snapshotData.date.toDateString(),
+          mytime: snapshotData.time,
+        });
+      } else {
+        console.log(response.status);
+        console.log(response.data);
+        res.redirect("/history");
+      }
+    })
+    .catch((error) => {
+      console.log(`Error making API request ${error}`);
+    });
+};
+
+// Process update of snapshot
+exports.postUpdateSnapshot = (req, res) => {
+  const { id } = req.params;
+  const { mytrigger } = req.body; // Extract trigger data from request body
+  vals = [mytrigger]; // Construct values array
+
+  console.log(id);
+  console.log(vals);
+
+  const endpoint = `http://localhost:3002/updatesnapshot/${id}`;
+
+  // Send POST request to API endpoint
+  axios
+    .post(endpoint, vals, {
+      validateStatus: (status) => {
+        return status < 500;
+      },
+    })
+    .then((response) => {
+      const status = response.status;
+
+      if (status === 200) {
+        res.redirect("/history");
+      } else {
+        console.log(response.status);
+        console.log(response.data);
+        res.redirect("/history");
+      }
+    })
+    .catch((error) => {
+      console.log(`Error making API request ${error}`);
+    });
+};
+
+// Process deletion of snapshot
 exports.postDeleteSnapshot = (req, res) => {
   const { id } = req.params;
 
-  const deleteSQL = `DELETE FROM emotions WHERE emotion_id = ${id}`;
-  conn.query(deleteSQL, (err, rows) => {
-    if (err) {
-      throw err;
-    } else {
-      res.redirect("/history");
-    }
-  });
+  const endpoint = `http://localhost:3002/deletesnapshot/${id}`;
+
+  // Send DELETE request to API endpoint
+  axios
+    .delete(endpoint, {
+      validateStatus: (status) => {
+        return status < 500;
+      },
+    })
+    .then((response) => {
+      const status = response.status;
+
+      if (status === 200) {
+        const data = response.data.result;
+        res.redirect("/history");
+      } else {
+        console.log(response.status);
+        console.log(response.data);
+        res.redirect("/history");
+      }
+    })
+    .catch((error) => {
+      console.log(`Error making API request ${error}`);
+    });
 };
 
+// Render trends page
 exports.getYourTrends = (req, res) => {
-
   var userInfo = {};
   const { isloggedin, userid, firstname } = req.session;
   console.log(`User data from session: ${isloggedin}, ${userid}, ${firstname}`);
 
   userInfo = { loggedin: isloggedin, userid: userid, firstname: firstname };
 
-  if(isloggedin==true) {
+  const endpoint = `http://localhost:3002/trends`;
 
-    const selectSQL =
-    `SELECT * FROM emotions WHERE user_id = ${userInfo.userid} ORDER BY date DESC, time DESC`;
+  // Send GET request to API endpoint
+  axios
+    .get(endpoint, { params: { userid } })
+    .then((response) => {
+      const rows = response.data.result;
+      console.log(rows);
 
-    conn.query(selectSQL, (err, rows) => {
-      if (err) {
-        throw err;
-      } else {
-        console.log(rows);
-  
-        res.render("trends", { result: rows });
-      }
+      // Arrays to store emotion values, triggers, and concatenated date-time strings
+      const emotionArrays = {};
+      const triggerArrays = [];
+      const dateTimeArray = [];
+
+      // Iterate through each object in the array
+      rows.forEach((item) => {
+        // Iterate through each key (except non-emotion and date-time keys)
+        Object.keys(item).forEach((key) => {
+          if (
+            key !== "emotion_id" &&
+            key !== "user_id" &&
+            key !== "triggers" &&
+            key !== "date" &&
+            key !== "time"
+          ) {
+            // Capitalize the first character of the key
+            const capitalisedKey = key.charAt(0).toUpperCase() + key.slice(1);
+
+            // If the key doesn't exist in the emotionArrays object, create an array for it
+            if (!emotionArrays[capitalisedKey]) {
+              emotionArrays[capitalisedKey] = [];
+            }
+            // Push the value for the current key into its respective array
+            emotionArrays[capitalisedKey].push(item[key]);
+          }
+          // Check if the key is 'triggers'
+          if (key === "triggers") {
+            // Push trigger values directly into the triggerArrays array
+            triggerArrays.push(item[key]);
+          }
+        });
+
+        // Modify the date values
+        item.date = item.date.substring(0, 10);
+        //console.log(item.date);
+        // Convert item.date to a Date object and format it
+        item.date = new Date(item.date).toLocaleDateString("en-GB"); // Change to DD-MM-YYYY format
+        item.time = item.time.substring(0, 5); // Change time to HH-MM format
+
+        // Concatenate date and time and push it into the dateTimeArray
+        dateTimeArray.push(`${item.date} ${item.time}`);
+      });
+
+      console.log(emotionArrays);
+      console.log(triggerArrays);
+      console.log(dateTimeArray);
+      
+      res.render("trends", {
+        emotions: emotionArrays,
+        triggers: triggerArrays,
+        dateTime: dateTimeArray,
+      });
+    })
+    .catch((error) => {
+      console.log(`Error making API request ${error}`);
     });
-
-  } else {
-    res.redirect("/login");
-   }
-
-  
 };
 
-module.exports = snapshotController;
+module.exports = snapshotController; // Export snapshot controller module
