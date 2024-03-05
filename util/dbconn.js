@@ -1,4 +1,6 @@
-const mysql = require("mysql2");
+//Previously used to connect server to database. As all database calls have been extracted to the API, this code can now be commented out
+
+/* const mysql = require("mysql2");
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
@@ -10,3 +12,4 @@ const pool = mysql.createPool({
 });
 
 module.exports = pool;
+*/

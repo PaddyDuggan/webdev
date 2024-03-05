@@ -1,12 +1,15 @@
 const express = require("express");
 const controller = require('../controllers/snapshotcontroller');
+const { isAuth } = require('./../middleware/auth')
+
 const router = express.Router();
 
-router.get("/record", controller.getRecordSnapshot);
-router.get("/history", controller.getSnapshotHistory);
-router.get("/viewsnapshot/:id", controller.getViewSnapshot);
-router.get("/yourtrends", controller.getYourTrends);
-router.get("/editsnapshot/:id", controller.getEditSnapshot);
+// Define routes and their corresponding controller functions
+router.get("/record", isAuth, controller.getRecordSnapshot);
+router.get("/history", isAuth, controller.getSnapshotHistory);
+router.get("/viewsnapshot/:id", isAuth, controller.getViewSnapshot);
+router.get("/yourtrends", isAuth, controller.getYourTrends);
+router.get("/editsnapshot/:id", isAuth, controller.getEditSnapshot);
 
 router.post("/record", controller.postRecordSnapshot);
 router.post("/updatesnapshot/:id", controller.postUpdateSnapshot);

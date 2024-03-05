@@ -18,7 +18,7 @@
 <body>
   <nav class="navbar navbar-expand-lg bg-primary fixed-top" data-bs-theme="dark">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#"><img src="/imgs/moodlog-high-resolution-logo-transparent (2).png" alt="Logo" width="150" height="40" class="d-inline-block align-text-center"></a>
+      <a class="navbar-brand" href="/home"><img src="/imgs/moodlog-high-resolution-logo-transparent (2).png" alt="Logo" width="150" height="40" class="d-inline-block align-text-center"></a>
       <button
         class="navbar-toggler"
         type="button"
@@ -54,70 +54,88 @@
     </div>
   </nav>
 
+  <!-- Header -->
   <div>
     <h1 class="text-center shadow-sm mt-5 p-5">Emotional Snapshot History</h1>
   </div>
 
   <div class="container my-5">
     <section>
+        <!-- If no results retrieved from database for logged-in user then create link to record page -->
         <% if(result.length == 0) { %>
-            <div class="text-center">
-                <h4 class="text-danger">Nothing to show yet</h4>
-                <a href="/record" class="btn btn-success btn-lg my-3">Create New Entry</a>
-            </div>
+          <div class="text-center">
+            <h4 class="text-danger bg-white d-inline-block p-3 p-2 rounded-pill">Nothing to show yet</h4>
+          </div>
+          <div class="text-center my-3">
+            <a href="/record" class="btn btn-success btn-lg">Create New Entry</a>
+        </div>
+        <!-- If there are records for the user then display in a table -->
         <% } else {%>
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover text-center">
-                    <thead>
+          <div class="table-responsive">
+            <!-- Create a responsive table to display each recorded snapshot for the user-->
+            <table class="table table-bordered table-striped table-hover text-center">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Emotions</th>
+                        <th>Triggers</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- EJS code to loop through each user snapshot and display as its own row in the table-->
+                    <% result.forEach((row) => { %>
                         <tr>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Enjoyment</th>
-                            <th>Sadness</th>
-                            <th>Anger</th>
-                            <th>Contempt</th>
-                            <th>Disgust</th>
-                            <th>Fear</th>
-                            <th>Surprise</th>
-                            <th>Trigger</th>
-                            <th></th>
+                            <!-- Convert date to more readable format -->
+                            <td><%= row.date.toLocaleDateString('en-GB') %></td>
+                            <td><%= row.time.substring(0,5) %></td>
+                            <td>
+                                <div class="d-flex flex-wrap justify-content-end">
+                                    <div class="me-3 mb-2">
+                                        <span>Enjoyment</span>
+                                        <!-- Using badges which allows table to look better on small screen sizes-->
+                                        <!-- Alter the colour of each badge based off the value (Green = good, Orange = OK, Red = bad)-->
+                                        <!-- Reversed the colours for enjoyment as its the only good emotion -->
+                                        <span class="badge <%= row.enjoyment < 33 ? 'bg-danger' : (row.enjoyment >= 33 && row.enjoyment <= 66) ? 'bg-warning' : 'bg-success' %> text-white"><%= row.enjoyment %></span>
+                                    </div>
+                                    <div class="me-3 mb-2">
+                                        <span>Sadness</span>
+                                        <span class="badge <%= row.sadness < 33 ? 'bg-success' : (row.sadness >= 33 && row.sadness <= 66) ? 'bg-warning' : 'bg-danger' %> text-white"><%= row.sadness %></span>
+                                    </div>
+                                    <div class="me-3 mb-2">
+                                      <span>Anger</span>
+                                      <span class="badge <%= row.anger < 33 ? 'bg-success' : (row.anger >= 33 && row.anger <= 66) ? 'bg-warning' : 'bg-danger' %> text-white"><%= row.anger %></span>
+                                    </div>
+                                    <div class="me-3 mb-2">
+                                      <span>Contempt</span>
+                                      <span class="badge <%= row.contempt < 33 ? 'bg-success' : (row.contempt >= 33 && row.contempt <= 66) ? 'bg-warning' : 'bg-danger' %> text-white"><%= row.contempt %></span>
+                                    </div>
+                                    <div class="me-3 mb-2">
+                                      <span>Disgust</span>
+                                      <span class="badge <%= row.disgust < 33 ? 'bg-success' : (row.disgust >= 33 && row.disgust <= 66) ? 'bg-warning' : 'bg-danger' %> text-white"><%= row.disgust %></span>
+                                    </div>
+                                    <div class="me-3 mb-2">
+                                      <span>Fear</span>
+                                      <span class="badge <%= row.fear < 33 ? 'bg-success' : (row.fear >= 33 && row.fear <= 66) ? 'bg-warning' : 'bg-danger' %> text-white"><%= row.fear %></span>
+                                    </div>
+                                    <div class="me-3 mb-2">
+                                      <span>Surprise</span>
+                                      <span class="badge <%= row.surprise < 33 ? 'bg-success' : (row.surprise >= 33 && row.surprise <= 66) ? 'bg-warning' : 'bg-danger' %> text-white"><%= row.surprise %></span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><%= row.triggers %></td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <% result.forEach((row) => { %>
-                            <tr>
-                              <td><%= row.date.toLocaleDateString('en-GB') %></td>
-                                <td><%= row.time.substring(0,5) %></td>
-                                <td class="<%= row.enjoyment < 33 ? 'table-danger' : (row.enjoyment >= 33 && row.enjoyment <= 66) ? 'table-warning' : 'table-success' %> text-center">
-                                    <%= row.enjoyment %>
-                                </td>
-                                <td class="<%= row.sadness < 33 ? 'table-success' : (row.sadness >= 33 && row.sadness <= 66) ? 'table-warning' : 'table-danger' %> text-center">
-                                    <%= row.sadness %>
-                                </td>
-                                <td class="<%= row.anger < 33 ? 'table-success' : (row.anger >= 33 && row.anger <= 66) ? 'table-warning' : 'table-danger' %> text-center">
-                                    <%= row.anger %>
-                                </td>
-                                <td class="<%= row.contempt < 33 ? 'table-success' : (row.contempt >= 33 && row.contempt <= 66) ? 'table-warning' : 'table-danger' %> text-center">
-                                    <%= row.contempt %>
-                                </td>
-                                <td class="<%= row.disgust < 33 ? 'table-success' : (row.disgust >= 33 && row.disgust <= 66) ? 'table-warning' : 'table-danger' %> text-center">
-                                    <%= row.disgust %>
-                                </td>
-                                <td class="<%= row.fear < 33 ? 'table-success' : (row.fear >= 33 && row.fear <= 66) ? 'table-warning' : 'table-danger' %> text-center">
-                                    <%= row.fear %>
-                                </td>
-                                <td class="<%= row.surprise < 33 ? 'table-success' : (row.surprise >= 33 && row.surprise <= 66) ? 'table-warning' : 'table-danger' %> text-center">
-                                    <%= row.surprise %>
-                                </td>
-                                <td><%= row.triggers %></td>
-                                <td>
-                                    <a class="btn btn-primary" href="/viewsnapshot/<%= row.emotion_id %>">View/Edit</a>
-                                </td>
-                            </tr>
-                        <% }); %>
-                    </tbody> 
-                </table>
-            </div>
+                        <tr>
+                            <td colspan="4">
+                                <!-- Link to the view snapshot page for each snapshot -->
+                                <a class="btn btn-primary" href="/viewsnapshot/<%= row.emotion_id %>">View/Edit</a>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody> 
+            </table>
+        </div>
         <% } %>
     </section>
 </div>
